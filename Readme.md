@@ -602,16 +602,869 @@ CodeReady Builder
 ---
 
 ## End of Part 1
+# Part 2A – Nagios Core Installation on RHEL 9.8
 
-The next chapter begins with:
+---
 
-11. Updating the System
-12. Installing Dependencies
-13. Explanation of Every Package
-14. Creating Nagios User and Groups
-15. Downloading Nagios Core
-16. Extracting the Source Code
-17. Understanding the Source Tree
-18. Configuring Nagios
-19. Compiling Nagios
-20. Installing Nagios
+# 11. Updating the System
+
+## Objective
+
+Before installing any software, always update the operating system to ensure all installed packages are current and any known bugs or security vulnerabilities are fixed.
+
+Updating the system also ensures that the package manager has the latest metadata and dependency information.
+
+---
+
+## Why Update the System?
+
+Updating the operating system provides several benefits:
+
+- Installs latest security patches
+- Fixes bugs in existing packages
+- Updates dependency information
+- Improves package compatibility
+- Reduces installation failures
+- Ensures newer compiler versions are available
+
+---
+
+## Verify Current OS Version
+
+Before updating, verify the operating system version.
+
+```bash
+cat /etc/redhat-release
+```
+
+Example Output
+
+```text
+Red Hat Enterprise Linux release 9.8 (Plow)
+```
+
+---
+
+## Verify Kernel Version
+
+```bash
+uname -r
+```
+
+Example
+
+```text
+5.14.0-570.23.1.el9_8.x86_64
+```
+
+---
+
+## Check System Architecture
+
+```bash
+uname -m
+```
+
+Expected Output
+
+```text
+x86_64
+```
+
+---
+
+## Refresh Repository Metadata
+
+```bash
+sudo dnf clean all
+sudo dnf makecache
+```
+
+### Explanation
+
+| Command | Description |
+|----------|-------------|
+| dnf clean all | Removes cached package information |
+| dnf makecache | Downloads latest repository metadata |
+
+---
+
+## Update Installed Packages
+
+```bash
+sudo dnf update -y
+```
+
+### Command Breakdown
+
+| Option | Meaning |
+|---------|----------|
+| dnf | Package manager |
+| update | Update installed packages |
+| -y | Automatically answer "Yes" |
+
+---
+
+Example Output
+
+```text
+Updating Subscription Management repositories.
+
+Dependencies resolved.
+
+Complete!
+```
+
+---
+
+## Verify Updates
+
+```bash
+rpm -qa | wc -l
+```
+
+Displays the number of installed packages.
+
+---
+
+## Check for Reboot Requirement
+
+```bash
+needs-restarting -r
+```
+
+Possible outputs
+
+```
+No core libraries or services have been updated.
+```
+
+or
+
+```
+Reboot is required.
+```
+
+---
+
+## Reboot the Server
+
+If required
+
+```bash
+sudo reboot
+```
+
+---
+
+## Verify After Reboot
+
+```bash
+uptime
+```
+
+```bash
+hostnamectl
+```
+
+---
+
+## Best Practice
+
+Always reboot after kernel updates before installing production software.
+
+---
+
+# 12. Installing Dependencies
+
+## Objective
+
+Nagios is distributed as source code.
+
+Before compiling Nagios, several development libraries and tools must be installed.
+
+These packages provide:
+
+- Compiler
+- Build tools
+- Graphics libraries
+- SSL libraries
+- Apache
+- PHP
+- SNMP libraries
+
+---
+
+## Install All Required Packages
+
+```bash
+sudo dnf install -y \
+gcc \
+gcc-c++ \
+glibc \
+glibc-common \
+glibc-devel \
+make \
+gettext \
+automake \
+autoconf \
+wget \
+curl \
+unzip \
+tar \
+git \
+which \
+passwd \
+httpd \
+httpd-tools \
+php \
+php-cli \
+php-gd \
+gd \
+gd-devel \
+libpng \
+libpng-devel \
+libjpeg-turbo \
+libjpeg-turbo-devel \
+openssl \
+openssl-devel \
+perl \
+net-snmp \
+net-snmp-utils \
+net-snmp-perl \
+policycoreutils-python-utils
+```
+
+---
+
+## Verify Installation
+
+Compiler
+
+```bash
+gcc --version
+```
+
+Expected
+
+```
+gcc (GCC) 11.x
+```
+
+---
+
+Make
+
+```bash
+make --version
+```
+
+---
+
+Apache
+
+```bash
+httpd -v
+```
+
+---
+
+PHP
+
+```bash
+php -v
+```
+
+---
+
+OpenSSL
+
+```bash
+openssl version
+```
+
+---
+
+SNMP
+
+```bash
+snmpwalk --version
+```
+
+---
+
+## Verify Important Libraries
+
+```bash
+rpm -q \
+gd-devel \
+libpng-devel \
+libjpeg-turbo-devel \
+openssl-devel
+```
+
+---
+
+Expected
+
+```
+gd-devel
+libpng-devel
+libjpeg-turbo-devel
+openssl-devel
+```
+
+---
+
+## Common Issues
+
+### Package not found
+
+Example
+
+```
+libdbi-devel
+```
+
+RHEL 9 does not provide this package.
+
+It is **not required** for Nagios Core.
+
+---
+
+### perl-Net-SNMP
+
+Older documentation mentions
+
+```
+perl-Net-SNMP
+```
+
+RHEL 9 package name is
+
+```
+net-snmp-perl
+```
+
+---
+
+## Best Practice
+
+Always install dependencies before downloading Nagios.
+
+---
+
+# 13. Explanation of Every Package
+
+This section explains every package installed during dependency installation.
+
+---
+
+## GCC
+
+```
+gcc
+```
+
+GNU Compiler Collection.
+
+Purpose:
+
+Compiles Nagios source code into executable binaries.
+
+Without GCC:
+
+```
+Compilation will fail.
+```
+
+---
+
+## GCC-C++
+
+```
+gcc-c++
+```
+
+C++ compiler.
+
+Some plugins require C++ support.
+
+---
+
+## glibc
+
+GNU C Standard Library.
+
+Provides:
+
+- printf()
+- malloc()
+- free()
+- system()
+
+Almost every Linux program depends on glibc.
+
+---
+
+## make
+
+```
+make
+```
+
+Reads the Makefile and compiles software automatically.
+
+Example
+
+```
+make all
+```
+
+---
+
+## autoconf
+
+Creates the configure script.
+
+Used for source code portability.
+
+---
+
+## automake
+
+Generates Makefile.in.
+
+Works together with autoconf.
+
+---
+
+## gettext
+
+Provides localization support.
+
+Allows software messages in multiple languages.
+
+---
+
+## wget
+
+Downloads source code.
+
+Example
+
+```bash
+wget https://example.com/file.tar.gz
+```
+
+---
+
+## curl
+
+Transfers data over HTTP, HTTPS, FTP and many protocols.
+
+Useful for API testing and downloads.
+
+---
+
+## git
+
+Version control software.
+
+Not mandatory for Nagios but useful for downloading repositories.
+
+---
+
+## tar
+
+Extracts compressed archives.
+
+Example
+
+```bash
+tar -xzf nagios.tar.gz
+```
+
+---
+
+## unzip
+
+Extract ZIP archives.
+
+---
+
+## Apache
+
+```
+httpd
+```
+
+Hosts the Nagios web interface.
+
+Without Apache
+
+```
+No Web UI
+```
+
+---
+
+## httpd-tools
+
+Contains
+
+```
+htpasswd
+```
+
+Used to create
+
+```
+nagiosadmin
+```
+
+web login.
+
+---
+
+## PHP
+
+Runs Nagios web pages.
+
+---
+
+## PHP CLI
+
+Allows PHP execution from terminal.
+
+---
+
+## php-gd
+
+Provides graphics support.
+
+Required for status maps.
+
+---
+
+## GD
+
+Graphics library used for generating images.
+
+---
+
+## GD Development
+
+Provides header files required during compilation.
+
+---
+
+## libpng
+
+PNG image library.
+
+---
+
+## libjpeg
+
+JPEG image support.
+
+---
+
+## OpenSSL
+
+Provides encrypted communication.
+
+---
+
+## OpenSSL Development
+
+Required during compilation.
+
+Provides
+
+```
+openssl/ssl.h
+```
+
+---
+
+## Perl
+
+Several Nagios plugins are written in Perl.
+
+---
+
+## net-snmp
+
+Provides SNMP utilities.
+
+---
+
+## net-snmp-utils
+
+Commands like
+
+```
+snmpwalk
+snmpget
+snmptranslate
+```
+
+---
+
+## net-snmp-perl
+
+Provides Perl SNMP module.
+
+---
+
+## policycoreutils-python-utils
+
+Contains
+
+```
+semanage
+```
+
+Used for SELinux configuration.
+
+---
+
+# 14. Creating Nagios User and Groups
+
+## Objective
+
+Nagios should never run as the root user.
+
+A dedicated service account improves security and follows Linux best practices.
+
+---
+
+## Create Nagios User
+
+```bash
+sudo useradd nagios
+```
+
+Verify
+
+```bash
+id nagios
+```
+
+Example
+
+```
+uid=1001(nagios)
+```
+
+---
+
+## Create Command Group
+
+```bash
+sudo groupadd nagcmd
+```
+
+---
+
+## Add Nagios User
+
+```bash
+sudo usermod -aG nagcmd nagios
+```
+
+---
+
+## Add Apache User
+
+Apache must also access Nagios command files.
+
+```bash
+sudo usermod -aG nagcmd apache
+```
+
+---
+
+## Verify Groups
+
+```bash
+groups nagios
+```
+
+Expected
+
+```
+nagios nagcmd
+```
+
+---
+
+Apache
+
+```bash
+groups apache
+```
+
+Expected
+
+```
+apache nagcmd
+```
+
+---
+
+## Why Separate Users?
+
+Benefits
+
+- Improved security
+- Better auditing
+- Principle of least privilege
+- Prevent accidental system damage
+
+---
+
+## Important Files
+
+Nagios files belong to
+
+```
+nagios:nagios
+```
+
+Command pipe belongs to
+
+```
+nagios:nagcmd
+```
+
+---
+
+# 15. Downloading Nagios Core
+
+## Objective
+
+Nagios Core is distributed as source code.
+
+We download the latest stable version directly from the official GitHub repository.
+
+---
+
+## Change Directory
+
+```bash
+cd /usr/src
+```
+
+---
+
+## Why /usr/src?
+
+Linux convention for source code.
+
+Advantages
+
+- Organized
+- Writable by root
+- Standard build location
+
+---
+
+## Download Nagios Core
+
+```bash
+wget -O nagios.tar.gz \
+https://github.com/NagiosEnterprises/nagioscore/archive/refs/tags/nagios-4.5.13.tar.gz
+```
+
+---
+
+## Verify Download
+
+```bash
+ls -lh nagios.tar.gz
+```
+
+Example
+
+```
+2.5M
+```
+
+---
+
+## Verify File Type
+
+```bash
+file nagios.tar.gz
+```
+
+Expected
+
+```
+gzip compressed data
+```
+
+---
+
+## Verify SHA (Optional)
+
+```bash
+sha256sum nagios.tar.gz
+```
+
+Compare with the checksum published by the Nagios project when available.
+
+---
+
+## Why Download from GitHub?
+
+Advantages
+
+- Official source
+- Latest stable release
+- Easy version management
+- Secure HTTPS download
+
+---
+
+## Download Directory Structure
+
+```
+/usr/src
+│
+├── nagios.tar.gz
+│
+└── (later)
+    nagioscore-nagios-4.5.13/
+```
+
+---
+
+## Verification Checklist
+
+At this stage verify:
+
+- ✅ System updated
+- ✅ Required repositories enabled
+- ✅ All dependencies installed
+- ✅ Compiler working
+- ✅ Apache installed
+- ✅ PHP installed
+- ✅ Nagios user created
+- ✅ nagcmd group created
+- ✅ Source code downloaded
+
+---
+
+## End of Part 2A
+
+The next part (2B) covers:
+
+16. Extracting the Source Code  
+17. Understanding the Source Tree  
+18. Configuring Nagios (`./configure`)  
+19. Compiling Nagios (`make all`)  
+20. Installing Nagios (`make install`, `make install-init`, `make install-config`, `make install-commandmode`, `make install-webconf`)
