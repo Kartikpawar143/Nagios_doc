@@ -1461,10 +1461,1698 @@ At this stage verify:
 
 ## End of Part 2A
 
-The next part (2B) covers:
+# Part 2B-1 – Extracting, Understanding and Configuring Nagios Core
 
-16. Extracting the Source Code  
-17. Understanding the Source Tree  
-18. Configuring Nagios (`./configure`)  
-19. Compiling Nagios (`make all`)  
-20. Installing Nagios (`make install`, `make install-init`, `make install-config`, `make install-commandmode`, `make install-webconf`)
+---
+
+# 16. Extracting the Source Code
+
+## Objective
+
+After downloading the Nagios Core source code archive, the next step is to extract it into a working directory.
+
+The downloaded archive is a compressed **tar.gz** file containing the complete Nagios Core source code.
+
+---
+
+## What is a tar.gz File?
+
+A **tar.gz** file is a compressed archive commonly used in Linux.
+
+It consists of two stages:
+
+```
+Source Files
+      │
+      ▼
+ TAR Archive (.tar)
+      │
+      ▼
+ GZIP Compression (.gz)
+      │
+      ▼
+ file.tar.gz
+```
+
+The `.tar` package groups files together, while `.gz` compresses the package to reduce download size.
+
+---
+
+## Verify the Download
+
+Navigate to the download directory.
+
+```bash
+cd /usr/src
+```
+
+List the downloaded file.
+
+```bash
+ls -lh
+```
+
+Example Output
+
+```
+-rw-r--r-- 1 root root 2.5M nagios.tar.gz
+```
+
+---
+
+## Check File Type
+
+```bash
+file nagios.tar.gz
+```
+
+Expected Output
+
+```
+nagios.tar.gz: gzip compressed data
+```
+
+---
+
+## Extract the Archive
+
+Run:
+
+```bash
+tar -xzf nagios.tar.gz
+```
+
+### Command Explanation
+
+| Option | Description |
+|---------|-------------|
+| x | Extract archive |
+| z | Use gzip decompression |
+| f | Read from file |
+
+---
+
+## Verify Extraction
+
+```bash
+ls
+```
+
+Example
+
+```
+nagios.tar.gz
+
+nagioscore-nagios-4.5.13
+```
+
+---
+
+## Change Directory
+
+```bash
+cd nagioscore-nagios-4.5.13
+```
+
+Verify
+
+```bash
+pwd
+```
+
+Example
+
+```
+/usr/src/nagioscore-nagios-4.5.13
+```
+
+---
+
+## Why Extract in /usr/src?
+
+Linux follows the Filesystem Hierarchy Standard (FHS).
+
+```
+/
+├── bin
+├── boot
+├── etc
+├── home
+├── opt
+├── usr
+│   └── src
+│       └── nagioscore-nagios-4.5.13
+└── var
+```
+
+Advantages
+
+- Standard build location
+- Easy cleanup
+- Does not interfere with installed applications
+- Used by most source installations
+
+---
+
+## Common Errors
+
+### Error
+
+```
+tar: Cannot open: No such file
+```
+
+Cause
+
+Wrong filename.
+
+Solution
+
+```
+ls
+```
+
+Verify the exact filename.
+
+---
+
+### Error
+
+```
+gzip: stdin: not in gzip format
+```
+
+Cause
+
+Corrupted download.
+
+Solution
+
+Download the archive again.
+
+---
+
+## Best Practice
+
+Always verify the downloaded archive before extracting it.
+
+---
+
+# 17. Understanding the Source Tree
+
+## Objective
+
+Nagios is distributed as source code.
+
+Understanding the source directory helps administrators troubleshoot compilation problems and customize installations.
+
+---
+
+## View Directory Structure
+
+Run
+
+```bash
+ls
+```
+
+You will see folders similar to:
+
+```
+base/
+cgi/
+common/
+contrib/
+docs/
+html/
+include/
+lib/
+module/
+sample-config/
+startup/
+worker/
+```
+
+---
+
+## Complete Directory Layout
+
+```
+nagioscore-nagios-4.5.13
+
+├── base
+├── cgi
+├── common
+├── contrib
+├── docs
+├── html
+├── include
+├── lib
+├── module
+├── sample-config
+├── startup
+├── worker
+├── configure
+├── Makefile.in
+└── README
+```
+
+---
+
+## Directory Explanation
+
+### base/
+
+Contains the Nagios monitoring engine.
+
+Responsible for
+
+- Scheduling
+- Host checks
+- Service checks
+- Notifications
+- Logging
+
+Important files
+
+```
+nagios.c
+checks.c
+events.c
+notifications.c
+```
+
+---
+
+### cgi/
+
+Contains the web interface programs.
+
+These generate pages like
+
+```
+Current Status
+
+Hosts
+
+Services
+
+Reports
+```
+
+Example
+
+```
+status.cgi
+
+history.cgi
+
+config.cgi
+```
+
+---
+
+### common/
+
+Shared code used throughout Nagios.
+
+Includes
+
+- Objects
+- Commands
+- Logging
+- Comments
+
+---
+
+### html/
+
+Contains
+
+```
+CSS
+
+Images
+
+JavaScript
+
+PHP
+```
+
+Everything displayed inside the browser comes from this directory.
+
+---
+
+### include/
+
+Contains
+
+```
+Header Files
+```
+
+Examples
+
+```
+config.h
+
+common.h
+
+objects.h
+```
+
+---
+
+### lib/
+
+Libraries used by Nagios.
+
+Provides
+
+```
+Networking
+
+Queues
+
+Memory
+
+Utilities
+```
+
+---
+
+### module/
+
+Contains Event Broker Modules.
+
+Allows third-party integrations.
+
+Examples
+
+```
+Livestatus
+
+NDOUtils
+
+Broker Modules
+```
+
+---
+
+### startup/
+
+Contains
+
+```
+systemd Service
+
+Startup Scripts
+```
+
+This directory installs
+
+```
+nagios.service
+```
+
+---
+
+### sample-config/
+
+Contains example configuration files.
+
+Examples
+
+```
+nagios.cfg
+
+cgi.cfg
+
+localhost.cfg
+
+contacts.cfg
+
+commands.cfg
+```
+
+These become the default configuration after installation.
+
+---
+
+### worker/
+
+Contains worker processes.
+
+Used for
+
+- Ping checks
+- Worker scheduling
+- Parallel execution
+
+---
+
+## Important Files
+
+### configure
+
+```
+./configure
+```
+
+Checks your Linux system.
+
+Generates
+
+```
+Makefile
+```
+
+---
+
+### Makefile
+
+Contains instructions for
+
+```
+Compilation
+
+Installation
+
+Cleaning
+```
+
+---
+
+### README
+
+General information.
+
+Always read before compiling software.
+
+---
+
+## Relationship Between Directories
+
+```
+configure
+     │
+     ▼
+Makefile
+     │
+     ▼
+Compilation
+     │
+     ▼
+base/
+cgi/
+html/
+worker/
+```
+
+---
+
+## Source Code Flow
+
+```
+Source Code
+      │
+      ▼
+configure
+      │
+      ▼
+Makefile
+      │
+      ▼
+make all
+      │
+      ▼
+Executable Files
+      │
+      ▼
+Installation
+```
+
+---
+
+# 18. Configuring Nagios
+
+## Objective
+
+Before compiling Nagios, the system must be checked for required libraries, compilers and dependencies.
+
+This process is performed using the **configure** script.
+
+---
+
+## What is configure?
+
+The configure script automatically checks
+
+- Compiler
+- Libraries
+- Header files
+- Operating System
+- SSL
+- Apache
+- GD Library
+- User Accounts
+
+After successful verification, it creates a customized **Makefile**.
+
+---
+
+## Run Configure
+
+Execute
+
+```bash
+./configure \
+--with-command-group=nagcmd
+```
+
+---
+
+## Command Breakdown
+
+```
+./configure
+```
+
+Runs the configuration script.
+
+---
+
+```
+--with-command-group=nagcmd
+```
+
+Specifies the group allowed to execute external Nagios commands.
+
+---
+
+## What Happens Internally?
+
+The configure script checks
+
+```
+Compiler
+
+Header Files
+
+Libraries
+
+SSL
+
+GD
+
+System Type
+
+Apache
+
+Perl
+
+Systemd
+
+Socket Support
+
+Shared Libraries
+```
+
+---
+
+Example Flow
+
+```
+Start
+
+↓
+
+Check Compiler
+
+↓
+
+Check Libraries
+
+↓
+
+Check Apache
+
+↓
+
+Check SSL
+
+↓
+
+Check GD
+
+↓
+
+Generate Makefile
+
+↓
+
+Configuration Complete
+```
+
+---
+
+## Successful Output
+
+Near the end you should see
+
+```
+*** Configuration summary for Nagios ***
+```
+
+Example
+
+```
+Nagios executable
+
+Nagios user
+
+Command group
+
+Install directory
+
+Apache directory
+
+HTML URL
+
+CGI URL
+```
+
+---
+
+## Verify Generated Files
+
+Run
+
+```bash
+ls
+```
+
+You should now see
+
+```
+Makefile
+
+config.status
+
+config.log
+```
+
+---
+
+## Understanding Generated Files
+
+### Makefile
+
+Used by
+
+```
+make
+```
+
+Contains every compilation instruction.
+
+---
+
+### config.log
+
+Contains detailed information.
+
+Useful when configure fails.
+
+---
+
+### config.status
+
+Records configuration settings.
+
+Used to regenerate files.
+
+---
+
+## Common Warnings
+
+### Warning
+
+```
+Kerberos include files not found
+```
+
+Usually safe to ignore.
+
+---
+
+### Warning
+
+```
+mail not found
+```
+
+Install
+
+```
+mailx
+```
+
+if email notifications are required.
+
+---
+
+### GD Library Warning
+
+```
+checking for GD library...
+```
+
+Must end with
+
+```
+yes
+```
+
+Otherwise install
+
+```
+gd-devel
+```
+
+---
+
+### OpenSSL
+
+Should display
+
+```
+checking whether compiling and linking against SSL works...
+
+yes
+```
+
+---
+
+## Common Errors
+
+### Error
+
+```
+C compiler cannot create executables
+```
+
+Cause
+
+```
+gcc missing
+```
+
+Fix
+
+```bash
+sudo dnf install gcc
+```
+
+---
+
+### Error
+
+```
+GD library not found
+```
+
+Fix
+
+```bash
+sudo dnf install gd-devel
+```
+
+---
+
+### Error
+
+```
+OpenSSL headers missing
+```
+
+Fix
+
+```bash
+sudo dnf install openssl-devel
+```
+
+---
+
+## Verification Checklist
+
+Before moving to compilation, verify:
+
+- ✅ configure completed successfully
+- ✅ Makefile exists
+- ✅ config.log exists
+- ✅ config.status exists
+- ✅ Configuration summary displayed
+- ✅ No fatal errors reported
+
+---
+
+## End of Part 2B-1
+
+# Part 2B-2 – Compiling and Installing Nagios Core
+
+---
+
+# 19. Compiling Nagios Core
+
+## Objective
+
+After successfully running the `configure` script, the next step is to compile the Nagios source code.
+
+Compilation converts the C source files into executable binaries that Linux can execute.
+
+During compilation, the GNU Compiler Collection (GCC) translates thousands of lines of C source code into machine language.
+
+---
+
+# What is Compilation?
+
+Compilation is the process of converting human-readable source code into executable binary files.
+
+```
+Source Code (.c)
+        │
+        ▼
+      GCC Compiler
+        │
+        ▼
+ Object Files (.o)
+        │
+        ▼
+     Linker (ld)
+        │
+        ▼
+ Executable Binary
+```
+
+Without compilation, the Linux operating system cannot execute the Nagios program.
+
+---
+
+# Compilation Workflow
+
+```
+configure
+      │
+      ▼
+ Generate Makefile
+      │
+      ▼
+ make all
+      │
+      ▼
+ GCC Compiler
+      │
+      ▼
+ Object Files
+      │
+      ▼
+ Executables
+```
+
+---
+
+# Verify Current Directory
+
+Before compiling, ensure you are inside the Nagios source directory.
+
+```bash
+pwd
+```
+
+Expected Output
+
+```
+/usr/src/nagioscore-nagios-4.5.13
+```
+
+---
+
+# Verify Makefile Exists
+
+```bash
+ls Makefile
+```
+
+Expected
+
+```
+Makefile
+```
+
+If the Makefile is missing, the configure step did not complete successfully.
+
+---
+
+# Start Compilation
+
+Execute
+
+```bash
+make all
+```
+
+---
+
+# What Does "make all" Do?
+
+The `make` utility reads instructions from the Makefile generated during the configure step.
+
+It automatically compiles every required source file in the correct order.
+
+Internally, the following components are compiled:
+
+```
+base/
+cgi/
+html/
+module/
+worker/
+lib/
+```
+
+---
+
+# Compilation Process
+
+```
+make all
+
+↓
+
+Compile base/
+
+↓
+
+Compile cgi/
+
+↓
+
+Compile html/
+
+↓
+
+Compile module/
+
+↓
+
+Compile worker/
+
+↓
+
+Link Libraries
+
+↓
+
+Create Executable
+
+↓
+
+Compilation Complete
+```
+
+---
+
+# Example Output
+
+```
+cd ./base && make
+
+gcc -o nagios
+
+cd ./cgi && make
+
+gcc -o status.cgi
+
+gcc -o history.cgi
+
+cd ./html && make
+
+cd ./worker && make
+
+*** Compile finished ***
+```
+
+---
+
+# What Gets Created?
+
+Several executable programs are produced.
+
+Examples
+
+```
+nagios
+
+nagiostats
+
+status.cgi
+
+history.cgi
+
+config.cgi
+
+cmd.cgi
+
+summary.cgi
+```
+
+---
+
+# Understanding Compilation Messages
+
+During compilation, many messages are displayed.
+
+Example
+
+```
+gcc -Wall -g -O2
+```
+
+Explanation
+
+| Option | Description |
+|----------|-------------|
+| gcc | GNU Compiler |
+| -Wall | Enable compiler warnings |
+| -g | Include debugging symbols |
+| -O2 | Optimization level |
+
+---
+
+# Compiler Warnings
+
+Example
+
+```
+warning:
+```
+
+Warnings do not stop compilation.
+
+Compilation is considered successful if it reaches
+
+```
+*** Compile finished ***
+```
+
+---
+
+# Compiler Errors
+
+Errors begin with
+
+```
+error:
+```
+
+Compilation immediately stops.
+
+Example
+
+```
+fatal error:
+
+openssl/ssl.h
+
+No such file
+```
+
+Solution
+
+```
+sudo dnf install openssl-devel
+```
+
+---
+
+# Another Common Error
+
+```
+gd.h
+
+No such file
+```
+
+Solution
+
+```
+sudo dnf install gd-devel
+```
+
+---
+
+# Verify Compilation
+
+After compilation completes successfully, verify that the executable exists.
+
+```bash
+ls base/nagios
+```
+
+Expected
+
+```
+base/nagios
+```
+
+---
+
+# Verify Binary Type
+
+```bash
+file base/nagios
+```
+
+Expected
+
+```
+ELF 64-bit executable
+```
+
+---
+
+# Testing Before Installation
+
+Nagios provides a built-in test suite.
+
+Execute
+
+```bash
+make test
+```
+
+If everything passes, proceed with installation.
+
+---
+
+# Best Practices
+
+✔ Never ignore compiler errors
+
+✔ Warnings are acceptable
+
+✔ Errors must be fixed before installation
+
+---
+
+# 20. Installing Nagios Core
+
+## Objective
+
+Compilation creates executable files.
+
+Installation copies these compiled files into their proper locations on the operating system.
+
+Until installation is performed, Nagios cannot be used.
+
+---
+
+# Installation Workflow
+
+```
+Compiled Files
+
+↓
+
+Copy Files
+
+↓
+
+Create Directories
+
+↓
+
+Install Configuration
+
+↓
+
+Install Service
+
+↓
+
+Install Apache Configuration
+
+↓
+
+Ready to Run
+```
+
+---
+
+# Install Main Program
+
+Execute
+
+```bash
+make install
+```
+
+---
+
+## What Does It Install?
+
+Copies
+
+```
+Nagios Binary
+
+CGI Programs
+
+HTML Files
+
+Images
+
+Libraries
+```
+
+into
+
+```
+/usr/local/nagios
+```
+
+---
+
+# Directory Structure After Installation
+
+```
+/usr/local/nagios
+
+├── bin
+├── etc
+├── libexec
+├── sbin
+├── share
+├── var
+└── include
+```
+
+---
+
+# Install Systemd Service
+
+```bash
+make install-init
+```
+
+Purpose
+
+Creates
+
+```
+/lib/systemd/system/nagios.service
+```
+
+---
+
+# Verify
+
+```bash
+ls /lib/systemd/system/nagios.service
+```
+
+Expected
+
+```
+nagios.service
+```
+
+---
+
+# Install Configuration Files
+
+```bash
+make install-config
+```
+
+Copies sample configuration files into
+
+```
+/usr/local/nagios/etc
+```
+
+---
+
+# Installed Files
+
+```
+nagios.cfg
+
+cgi.cfg
+
+resource.cfg
+
+objects/
+```
+
+---
+
+# Verify
+
+```bash
+ls /usr/local/nagios/etc
+```
+
+---
+
+# Install Command Mode
+
+```bash
+make install-commandmode
+```
+
+Purpose
+
+Creates
+
+```
+/usr/local/nagios/var/rw
+```
+
+This directory allows the web interface to send commands to the Nagios daemon.
+
+Examples
+
+```
+Schedule Downtime
+
+Acknowledge Problem
+
+Disable Notifications
+
+Enable Notifications
+```
+
+---
+
+# Verify
+
+```bash
+ls -ld /usr/local/nagios/var/rw
+```
+
+Expected
+
+```
+nagios nagcmd
+```
+
+---
+
+# Install Apache Configuration
+
+```bash
+make install-webconf
+```
+
+Purpose
+
+Creates
+
+```
+/etc/httpd/conf.d/nagios.conf
+```
+
+---
+
+# Verify
+
+```bash
+ls /etc/httpd/conf.d/nagios.conf
+```
+
+---
+
+# Install Sequence Summary
+
+```
+make install
+
+↓
+
+make install-init
+
+↓
+
+make install-config
+
+↓
+
+make install-commandmode
+
+↓
+
+make install-webconf
+```
+
+---
+
+# Understanding Each Command
+
+| Command | Purpose |
+|----------|----------|
+| make install | Install binaries and HTML files |
+| make install-init | Install systemd service |
+| make install-config | Install configuration files |
+| make install-commandmode | Configure command pipe |
+| make install-webconf | Configure Apache |
+
+---
+
+# Verify Installation Directories
+
+```bash
+tree -L 2 /usr/local/nagios
+```
+
+Expected
+
+```
+bin/
+
+etc/
+
+libexec/
+
+sbin/
+
+share/
+
+var/
+```
+
+---
+
+# Verify Ownership
+
+```bash
+ls -ld /usr/local/nagios
+```
+
+Expected
+
+```
+nagios nagios
+```
+
+---
+
+# Verify Installed Binary
+
+```bash
+/usr/local/nagios/bin/nagios --help
+```
+
+Expected
+
+Nagios command-line help should be displayed.
+
+---
+
+# Verify Version
+
+```bash
+/usr/local/nagios/bin/nagios -V
+```
+
+Expected
+
+```
+Nagios Core 4.5.13
+```
+
+---
+
+# Common Installation Errors
+
+## Permission Denied
+
+```
+Permission denied
+```
+
+Cause
+
+Not running as root.
+
+Solution
+
+```
+sudo
+```
+
+or login as
+
+```
+root
+```
+
+---
+
+## Missing Directory
+
+```
+No such file or directory
+```
+
+Cause
+
+Compilation did not complete.
+
+Solution
+
+Run
+
+```
+make all
+```
+
+again.
+
+---
+
+## Apache Configuration Missing
+
+```
+/etc/httpd/conf.d/nagios.conf
+```
+
+Solution
+
+```
+make install-webconf
+```
+
+---
+
+## Nagios Service Missing
+
+```
+Unit nagios.service not found
+```
+
+Solution
+
+```
+make install-init
+systemctl daemon-reload
+```
+
+---
+
+# Installation Verification Checklist
+
+Verify the following:
+
+✅ Nagios binary installed
+
+```bash
+ls /usr/local/nagios/bin
+```
+
+---
+
+✅ Configuration files installed
+
+```bash
+ls /usr/local/nagios/etc
+```
+
+---
+
+✅ Apache configuration installed
+
+```bash
+ls /etc/httpd/conf.d/nagios.conf
+```
+
+---
+
+✅ Service file installed
+
+```bash
+ls /lib/systemd/system/nagios.service
+```
+
+---
+
+✅ Version check
+
+```bash
+/usr/local/nagios/bin/nagios -V
+```
+
+---
+
+# Installation Flow Diagram
+
+```
+Download Source
+
+↓
+
+Extract Archive
+
+↓
+
+Configure
+
+↓
+
+Compile
+
+↓
+
+Install Binary
+
+↓
+
+Install Service
+
+↓
+
+Install Config
+
+↓
+
+Install Apache
+
+↓
+
+Ready for Plugins
+```
+
+---
+
+# End of Part 2B-2
