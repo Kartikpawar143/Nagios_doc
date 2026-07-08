@@ -899,6 +899,7 @@ libpng-devel
 libjpeg-turbo-devel
 openssl-devel
 ```
+<img width="522" height="355" alt="image" src="https://github.com/user-attachments/assets/a69e4e3e-913a-4e9c-b9a7-a0e40c397af2" />
 
 ---
 
