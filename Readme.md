@@ -3736,6 +3736,7 @@ Makefile
 ```bash
 make
 ```
+<img width="492" height="650" alt="image" src="https://github.com/user-attachments/assets/0ba6a0d6-f4e7-4c05-af7f-2679a4c7741b" />
 
 Compilation begins.
 
@@ -3846,6 +3847,7 @@ Verify
 ```bash
 ls /usr/local/nagios/libexec
 ```
+<img width="547" height="622" alt="image" src="https://github.com/user-attachments/assets/a0dbcfba-a023-49e7-a993-2f1d8e307f42" />
 
 You should see many plugin executables.
 
@@ -4166,6 +4168,7 @@ Execute
 ```bash
 htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
 ```
+<img width="632" height="57" alt="image" src="https://github.com/user-attachments/assets/c9b0a259-e0cd-496f-896e-f052293153c5" />
 
 ---
 
@@ -4456,6 +4459,7 @@ Expected
 ```
 Active: active (running)
 ```
+<img width="597" height="373" alt="image" src="https://github.com/user-attachments/assets/697765a1-faae-48ad-afb3-e4206998be2a" />
 
 ---
 
@@ -5194,6 +5198,7 @@ Expected
 ```
 Active: active (running)
 ```
+<img width="831" height="597" alt="image" src="https://github.com/user-attachments/assets/b4d9678b-9c66-4ca8-b520-9991f0fd5579" />
 
 ---
 
