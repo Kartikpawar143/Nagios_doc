@@ -20,7 +20,7 @@ This document explains how to install **Loki** and **Promtail** on **RHEL 9**, c
 |          Promtail                                   |
 |              │                                      |
 |              ▼                                      |
-|             Loki (Port 3100)                                  |
+|             Loki (Port 3100)                        |
 |              │                                      |
 +--------------│--------------------------------------+
                │ HTTP 
