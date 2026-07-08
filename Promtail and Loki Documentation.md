@@ -159,7 +159,7 @@ https://raw.githubusercontent.com/grafana/loki/v3.2.0/clients/cmd/promtail/promt
 Open the configuration file:
 
 ```bash
-sudo nano /etc/promtail/promtail-local-config.yaml
+sudo vi /etc/promtail/promtail-local-config.yaml
 ```
 
 Modify the client section:
@@ -188,7 +188,7 @@ sudo chown -R promtail:promtail /var/lib/promtail
 Create:
 
 ```text
-/etc/systemd/system/loki.service
+vi /etc/systemd/system/loki.service
 ```
 
 ```ini
@@ -217,7 +217,7 @@ WantedBy=multi-user.target
 Create:
 
 ```text
-/etc/systemd/system/promtail.service
+vi /etc/systemd/system/promtail.service
 ```
 
 ```ini
@@ -293,6 +293,7 @@ Expected:
 
 ```text
 ready
+if not ready then also no problem
 ```
 
 ---
@@ -342,6 +343,7 @@ Open:
 ```
 http://<SERVER-IP>:3000
 ```
+<img width="1535" height="863" alt="Screenshot 2026-07-09 001510" src="https://github.com/user-attachments/assets/171ee9ae-391e-493b-8fca-94cb4edd454c" />
 
 Default Credentials
 
@@ -374,12 +376,15 @@ URL
 
 http://localhost:3100
 ```
+<img width="1527" height="863" alt="Screenshot 2026-07-09 001650" src="https://github.com/user-attachments/assets/204570ee-e181-4c25-8b2d-dcebd943c17b" />
+
 
 Click:
 
 ```
 Save & Test
 ```
+<img width="1532" height="862" alt="Screenshot 2026-07-09 001703" src="https://github.com/user-attachments/assets/1fef8c7d-7ea8-4a6c-b24e-096c4c769fba" />
 
 Expected:
 
@@ -422,6 +427,7 @@ Search Test Log
 ```logql
 {} |= "Promtail test log"
 ```
+<img width="1536" height="863" alt="Screenshot 2026-07-09 001919" src="https://github.com/user-attachments/assets/064ca2df-0ee6-459d-8971-bd30460bffb6" />
 
 ---
 
