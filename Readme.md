@@ -1326,6 +1326,7 @@ Command pipe belongs to
 ```
 nagios:nagcmd
 ```
+<img width="447" height="86" alt="image" src="https://github.com/user-attachments/assets/b1a426c6-1648-4113-8471-225b3633bf13" />
 
 ---
 
