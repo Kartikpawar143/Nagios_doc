@@ -83,6 +83,8 @@ sudo systemctl enable --now cockpit.socket
 Check whether Cockpit is running.
 
 ```bash
+sudo systemctl start cockpit.socket
+sudo systemctl enable cockpit.socket
 sudo systemctl status cockpit.socket
 ```
 
@@ -91,7 +93,7 @@ Expected output:
 ```text
 Active: active (listening)
 ```
-<img width="793" height="40" alt="image" src="https://github.com/user-attachments/assets/7e40f953-4627-49b7-a849-13cf2644492b" />
+<img width="916" height="360" alt="image" src="https://github.com/user-attachments/assets/4bf87c45-7fda-490d-a033-ac3377ccdb8a" />
 
 ---
 # Step 6: Verify Port 9090
@@ -109,7 +111,8 @@ Expected output:
 ```text
 LISTEN 0 4096 *:9090
 ```
-<img width="916" height="360" alt="image" src="https://github.com/user-attachments/assets/4bf87c45-7fda-490d-a033-ac3377ccdb8a" />
+<img width="793" height="40" alt="image" src="https://github.com/user-attachments/assets/7e40f953-4627-49b7-a849-13cf2644492b" />
+
 
 ---
 # Step 7: Configure Firewall
