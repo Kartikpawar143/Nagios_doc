@@ -28,6 +28,7 @@ If installed:
 ```text
 cockpit-311.1-1.el9.x86_64
 ```
+<img width="342" height="40" alt="image" src="https://github.com/user-attachments/assets/bec0d310-ac68-4ba7-b5b5-754b3cab4a49" />
 
 If not installed:
 
@@ -90,6 +91,7 @@ Expected output:
 ```text
 Active: active (listening)
 ```
+<img width="793" height="40" alt="image" src="https://github.com/user-attachments/assets/7e40f953-4627-49b7-a849-13cf2644492b" />
 
 ---
 # Step 6: Verify Port 9090
@@ -107,6 +109,7 @@ Expected output:
 ```text
 LISTEN 0 4096 *:9090
 ```
+<img width="916" height="360" alt="image" src="https://github.com/user-attachments/assets/4bf87c45-7fda-490d-a033-ac3377ccdb8a" />
 
 ---
 # Step 7: Configure Firewall
@@ -161,7 +164,7 @@ hostname -I
 Example:
 
 ```text
-192.168.1.100
+<server-ip>
 ```
 
 ---
@@ -178,6 +181,7 @@ Example:
 ```
 https://192.168.1.100:9090
 ```
+<img width="1532" height="863" alt="image" src="https://github.com/user-attachments/assets/fe85ad4f-3320-4249-994a-081c9b269848" />
 
 If using the local machine:
 
