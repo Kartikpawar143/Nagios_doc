@@ -226,8 +226,8 @@ Description=Promtail
 After=network.target
 
 [Service]
-User=promtail
-Group=promtail
+User=root
+Group=root
 Type=simple
 
 ExecStart=/usr/local/bin/promtail -config.file=/etc/promtail/promtail-local-config.yaml
